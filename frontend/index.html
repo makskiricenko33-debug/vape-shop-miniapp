@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vape Shop Mini App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Основные стили -->
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app">
+    <header class="app__header">
+        <div class="app__title">
+            <h1>Vape Shop</h1>
+            <p>Каталог жидкостей и девайсов</p>
+        </div>
+        <div class="app__header-right">
+            <div class="app__badge">
+                Mini App
+            </div>
+            <button class="cart-indicator" type="button">
+                <span class="cart-indicator__icon">🛒</span>
+                <span class="cart-indicator__badge" id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="app__main">
+        <section class="products">
+            <h2 class="section-title">Товары</h2>
+            <div id="products-list" class="products__grid">
+                <!-- Карточки товаров будут подгружаться из JS -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="app__footer">
+        <button class="btn btn-primary">
+            Оформить заказ (скоро)
+        </button>
+    </footer>
+</div>
+
+<!-- Модальное окно корзины -->
+<div class="modal" id="cart-modal" style="display:none;">
+    <div class="modal__backdrop"></div>
+    <div class="modal__content">
+        <div class="modal__header">
+            <h3 id="cart-modal-title">Корзина</h3>
+            <button class="modal__close" id="cart-modal-close">&times;</button>
+        </div>
+        <div class="modal__body" id="cart-modal-body">
+            <!-- сюда JS подставит содержимое корзины -->
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

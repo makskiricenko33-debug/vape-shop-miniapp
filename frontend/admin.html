@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vape Shop · Админка заказов</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app">
+    <header class="app__header">
+        <div class="app__title">
+            <h1>Заказы</h1>
+            <p>Админ-панель Vape Shop</p>
+        </div>
+        <div class="app__badge">
+            Admin
+        </div>
+    </header>
+
+    <main class="app__main">
+        <section class="products">
+            <h2 class="section-title">Список заказов</h2>
+            <div id="orders-list" class="products__grid">
+                <!-- Заказы подгрузятся через JS -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="app__footer">
+        <button class="btn btn-primary" id="reload-orders">
+            Обновить заказы
+        </button>
+    </footer>
+</div>
+
+<!-- Модальное окно заказа -->
+<div class="modal" id="order-modal" style="display:none;">
+    <div class="modal__backdrop"></div>
+    <div class="modal__content">
+        <div class="modal__header">
+            <h3 id="modal-title">Заказ</h3>
+            <button class="modal__close" id="modal-close">&times;</button>
+        </div>
+        <div class="modal__body" id="modal-body">
+            <!-- Состав заказа подставит JS -->
+        </div>
+    </div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
