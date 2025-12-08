@@ -1,5 +1,5 @@
-const API_PRODUCTS = "http://localhost:8000/products/";
-const API_ORDERS = "http://localhost:8000/orders/";
+const API_PRODUCTS = "/products/";
+const API_ORDERS = "/orders/";
 
 const cart = {}; // { productId: { product, quantity } }
 let tgUser = null;
