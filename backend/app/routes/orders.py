@@ -34,6 +34,8 @@ async def create_order(payload: OrderCreate, db: AsyncSession = Depends(get_db))
 
     order = Order(
         customer_name=payload.customer_name,
+        phone=payload.phone,
+        city=payload.city,
         status="new",
     )
     db.add(order)

@@ -16,6 +16,8 @@ class Order(Base):
     status: Mapped[str] = mapped_column(String(32), default="new", nullable=False)
 
     customer_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    phone: Mapped[str] = mapped_column(String(32), nullable=False)
+    city: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     items: Mapped[list["OrderItem"]] = relationship(
         back_populates="order",

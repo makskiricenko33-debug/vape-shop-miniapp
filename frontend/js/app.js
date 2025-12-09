@@ -91,6 +91,56 @@ function buildCartHtml() {
     return html;
 }
 
+/* ----- Модалка оформления (контакты + согласие) ----- */
+
+function openCheckoutModal(onConfirm) {
+    const modal = document.getElementById("checkout-modal");
+    const nameInput = document.getElementById("checkout-name");
+    const phoneInput = document.getElementById("checkout-phone");
+    const cityInput = document.getElementById("checkout-city");
+    const consentInput = document.getElementById("checkout-consent");
+    const btnCancel = document.getElementById("checkout-cancel");
+    const btnConfirm = document.getElementById("checkout-confirm");
+
+    const defaultName =
+        (tgUser && (tgUser.username || tgUser.first_name)) || "";
+    nameInput.value = defaultName;
+
+    phoneInput.value = "";
+    cityInput.value = "";
+    consentInput.checked = false;
+
+    modal.style.display = "flex";
+
+    const close = () => {
+        modal.style.display = "none";
+        btnCancel.onclick = null;
+        btnConfirm.onclick = null;
+    };
+
+    btnCancel.onclick = close;
+
+    btnConfirm.onclick = () => {
+        const name = nameInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const city = cityInput.value.trim();
+        const consent = consentInput.checked;
+
+        const byPhoneRe = /^\+375\d{9}$/;
+        if (!byPhoneRe.test(phone)) {
+            alert("Введите телефон в формате +375XXXXXXXXX");
+            return;
+        }
+        if (!consent) {
+            alert("Нужно согласиться на обработку персональных данных.");
+            return;
+        }
+
+        close();
+        onConfirm({ name, phone, city });
+    };
+}
+
 /* ----- Корзина / футер / бейдж ----- */
 
 function renderCartSummary() {
@@ -128,7 +178,11 @@ function renderCartSummary() {
         if (checkoutBtn) {
             checkoutBtn.addEventListener("click", () => {
                 closeCartModal();
-                sendOrder();
+                const itemsNow = Object.values(cart);
+                if (!itemsNow.length) return;
+                openCheckoutModal((contact) => {
+                    sendOrder(contact);
+                });
             });
         }
     }
@@ -153,14 +207,13 @@ function setQuantity(product, qty) {
     renderCartSummary();
 }
 
-/* !!! Больше не увеличиваем количество здесь !!! */
+/* Кнопка «В корзину» – только открывает корзину/оформление */
+
 function addToCart(product) {
     const items = Object.values(cart);
     if (!items.length) {
-        // если ничего не выбрано — можно, например, добавить 1 шт. текущего товара
         setQuantity(product, 1);
     }
-    // просто открываем модалку корзины / идём к оформлению
     const html = buildCartHtml();
     openCartModal(html);
 
@@ -168,22 +221,30 @@ function addToCart(product) {
     if (checkoutBtn) {
         checkoutBtn.addEventListener("click", () => {
             closeCartModal();
-            sendOrder();
+            const itemsNow = Object.values(cart);
+            if (!itemsNow.length) return;
+            openCheckoutModal((contact) => {
+                sendOrder(contact);
+            });
         });
     }
 }
 
 /* ----- Оформление заказа ----- */
 
-async function sendOrder() {
+async function sendOrder(contact) {
     const items = Object.values(cart);
     if (items.length === 0) return;
 
     const customerName =
-        (tgUser && (tgUser.username || tgUser.first_name)) || "Гость";
+        contact.name ||
+        (tgUser && (tgUser.username || tgUser.first_name)) ||
+        "Гость";
 
     const payload = {
         customer_name: customerName,
+        phone: contact.phone,
+        city: contact.city || null,
         telegram_id: tgUser ? tgUser.id : null,
         items: items.map((item) => ({
             product_id: item.product.id,
@@ -212,11 +273,15 @@ async function sendOrder() {
         Object.keys(cart).forEach((k) => delete cart[k]);
         renderCartSummary();
 
-        alert(`Заказ №${data.id} создан!`);
+        alert(
+            `Заказ №${data.id} принят. Менеджер свяжется с вами в Telegram или по телефону.`
+        );
     } catch (e) {
         console.error(e);
         alert("Не удалось оформить заказ.");
         renderCartSummary();
+    } finally {
+        footerBtn.disabled = false;
     }
 }
 
@@ -332,7 +397,13 @@ document.addEventListener("DOMContentLoaded", () => {
     loadProducts();
 
     const footerBtn = document.querySelector(".app__footer .btn-primary");
-    footerBtn.addEventListener("click", sendOrder);
+    footerBtn.addEventListener("click", () => {
+        const items = Object.values(cart);
+        if (!items.length) return;
+        openCheckoutModal((contact) => {
+            sendOrder(contact);
+        });
+    });
 
     const cartButton = document.querySelector(".cart-indicator");
     if (cartButton) {
@@ -345,7 +416,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (checkoutBtn) {
                 checkoutBtn.addEventListener("click", () => {
                     closeCartModal();
-                    sendOrder();
+                    const itemsNow = Object.values(cart);
+                    if (!itemsNow.length) return;
+                    openCheckoutModal((contact) => {
+                        sendOrder(contact);
+                    });
                 });
             }
         });
