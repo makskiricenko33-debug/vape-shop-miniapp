@@ -2,7 +2,14 @@ import sys
 from pathlib import Path
 import logging
 
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
+from telegram import (
+    Update,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+    WebAppInfo,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # добавить корень проекта в sys.path
@@ -19,16 +26,16 @@ logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
+WEBAPP_URL = "https://vape-shop-miniapp-production.up.railway.app/app"
+ADMIN_URL = "https://vape-shop-miniapp-production.up.railway.app/admin"
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    webapp_url = "https://vape-shop-miniapp-production.up.railway.app/app"
-
-
     keyboard = [
         [
             KeyboardButton(
                 text="🛍 Открыть магазин",
-                web_app=WebAppInfo(url=webapp_url),
+                web_app=WebAppInfo(url=WEBAPP_URL),
             )
         ]
     ]
@@ -45,11 +52,29 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
+async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # при желании можно добавить проверку user_id, чтобы админка была только для тебя
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                text="📊 Открыть админку",
+                url=ADMIN_URL,
+            )
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        "Ссылка на админку магазина:", reply_markup=reply_markup
+    )
+
+
 def main() -> None:
     print(">>> Vape Shop bot starting")
 
     app = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("admin", admin_panel))
 
     logger.info("Vape Shop bot started (polling)")
     app.run_polling()
