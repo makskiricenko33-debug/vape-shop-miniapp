@@ -34,6 +34,8 @@ function showOrderDetails(orderId) {
             const items = data.items || [];
             let bodyHtml = `
                 <div><b>Клиент:</b> ${data.customer_name || "—"}</div>
+                <div><b>Телефон:</b> ${data.phone || "—"}</div>
+                <div><b>Город:</b> ${data.city || "—"}</div>
                 <div><b>Telegram ID:</b> ${data.telegram_id || "—"}</div>
                 <div><b>Статус:</b> ${
                     STATUS_LABELS[data.status] || data.status
@@ -88,6 +90,8 @@ function renderOrders(orders) {
                 <div class="product-card__desc">
                     Статус: <b>${STATUS_LABELS[o.status] || o.status}</b><br/>
                     Клиент: ${o.customer_name || "—"}<br/>
+                    Телефон: ${o.phone || "—"}<br/>
+                    Город: ${o.city || "—"}<br/>
                     Telegram ID: ${o.telegram_id || "—"}<br/>
                     Создан: ${formatDate(o.created_at)}
                 </div>
