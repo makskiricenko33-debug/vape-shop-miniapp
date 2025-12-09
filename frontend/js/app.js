@@ -104,11 +104,24 @@ function openCheckoutModal(onConfirm) {
 
     const defaultName =
         (tgUser && (tgUser.username || tgUser.first_name)) || "";
-    nameInput.value = defaultName;
 
-    phoneInput.value = "";
-    cityInput.value = "";
-    consentInput.checked = false;
+    if (nameInput) {
+        nameInput.value = defaultName;
+    }
+    if (phoneInput) {
+        phoneInput.value = "";
+    }
+    if (cityInput) {
+        cityInput.value = "";
+    }
+    if (consentInput) {
+        consentInput.checked = false;
+    }
+
+    if (!modal || !btnCancel || !btnConfirm || !nameInput || !phoneInput) {
+        console.error("Checkout modal elements not found");
+        return;
+    }
 
     modal.style.display = "flex";
 
@@ -124,7 +137,7 @@ function openCheckoutModal(onConfirm) {
         const name = nameInput.value.trim();
         const phone = phoneInput.value.trim();
         const city = cityInput.value.trim();
-        const consent = consentInput.checked;
+        const consent = consentInput ? consentInput.checked : false;
 
         const byPhoneRe = /^\+375\d{9}$/;
         if (!byPhoneRe.test(phone)) {
