@@ -9,28 +9,13 @@ import uvicorn
 
 from backend.app.routes import products, orders
 from backend.config import get_settings
-from backend.app.database.db import engine, Base
+from backend.app.database.db import Base
+from init_db import init_models  # твой скрипт инициализации
 
 settings = get_settings()
 
-
-async def init_db_if_needed() -> None:
-    # Для SQLite: создаём файл и таблицы, если БД ещё не существует
-    if settings.DATABASE_URL.startswith("sqlite"):
-        db_path = settings.DATABASE_URL.split("///", 1)[1]
-        path = Path(db_path)
-        if not path.exists():
-            # синхронное создание таблиц поверх async engine
-            from sqlalchemy import create_engine
-
-            sync_url = settings.DATABASE_URL.replace("+aiosqlite", "")
-            sync_engine = create_engine(sync_url, future=True)
-            Base.metadata.create_all(bind=sync_engine)
-            sync_engine.dispose()
-
-
-# при импорте модуля (старте приложения) гарантируем наличие таблиц
-asyncio.run(init_db_if_needed())
+# один раз при старте приложения создаём таблицы, если их ещё нет
+asyncio.run(init_models())
 
 app = FastAPI(
     title="Vape Shop API",
