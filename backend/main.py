@@ -9,12 +9,11 @@ import uvicorn
 
 from backend.app.routes import products, orders
 from backend.config import get_settings
-from backend.app.database.db import Base
-from init_db import init_models  # твой скрипт инициализации
+from init_db import init_models  # скрипт инициализации таблиц
 
 settings = get_settings()
 
-# один раз при старте приложения создаём таблицы, если их ещё нет
+# при старте приложения один раз создаём таблицы, если их нет
 asyncio.run(init_models())
 
 app = FastAPI(
