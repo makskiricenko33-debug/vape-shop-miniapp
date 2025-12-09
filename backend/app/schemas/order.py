@@ -9,6 +9,7 @@ class OrderListItem(BaseModel):
     customer_name: str | None = None
     phone: str
     city: str | None = None
+    telegram_id: int | None = None  # добавлено
 
     class Config:
         from_attributes = True
@@ -45,6 +46,7 @@ class OrderRead(BaseModel):
     customer_name: str | None = None
     phone: str
     city: str | None = None
+    telegram_id: int | None = None  # добавлено
     items: list[OrderItemRead]
 
     class Config:

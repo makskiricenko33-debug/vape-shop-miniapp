@@ -32,11 +32,20 @@ function showOrderDetails(orderId) {
         .then((res) => res.json())
         .then((data) => {
             const items = data.items || [];
+
+            const tgLink = data.telegram_id
+                ? `tg://user?id=${data.telegram_id}`
+                : null;
+
             let bodyHtml = `
                 <div><b>Клиент:</b> ${data.customer_name || "—"}</div>
                 <div><b>Телефон:</b> ${data.phone || "—"}</div>
                 <div><b>Город:</b> ${data.city || "—"}</div>
-                <div><b>Telegram ID:</b> ${data.telegram_id || "—"}</div>
+                <div><b>Telegram:</b> ${
+                    tgLink
+                        ? `<a href="${tgLink}">написать</a>`
+                        : "—"
+                }</div>
                 <div><b>Статус:</b> ${
                     STATUS_LABELS[data.status] || data.status
                 }</div>
@@ -80,6 +89,10 @@ function renderOrders(orders) {
 
     container.innerHTML = "";
     for (const o of orders) {
+        const tgLink = o.telegram_id
+            ? `tg://user?id=${o.telegram_id}`
+            : null;
+
         const card = document.createElement("div");
         card.className = "product-card";
         card.innerHTML = `
@@ -92,7 +105,11 @@ function renderOrders(orders) {
                     Клиент: ${o.customer_name || "—"}<br/>
                     Телефон: ${o.phone || "—"}<br/>
                     Город: ${o.city || "—"}<br/>
-                    Telegram ID: ${o.telegram_id || "—"}<br/>
+                    Telegram: ${
+                        tgLink
+                            ? `<a href="${tgLink}">написать</a>`
+                            : "—"
+                    }<br/>
                     Создан: ${formatDate(o.created_at)}
                 </div>
                 <div class="product-card__meta" style="margin-top:8px;">
