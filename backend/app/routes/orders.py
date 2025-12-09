@@ -34,7 +34,6 @@ async def create_order(payload: OrderCreate, db: AsyncSession = Depends(get_db))
 
     order = Order(
         customer_name=payload.customer_name,
-        telegram_id=payload.telegram_id,  # сохраняем telegram_id
         status="new",
     )
     db.add(order)
