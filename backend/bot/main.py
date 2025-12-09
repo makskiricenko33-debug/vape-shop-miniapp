@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # добавить корень проекта в sys.path
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 
-def start(update: Update, context: CallbackContext) -> None:
-    # Тест: проверяем, что именно этот хэндлер вызывается
-    webapp_url = "http://localhost:8000/app"
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    webapp_url = "https://vape-shop-miniapp-production.up.railway.app/app"
+
 
     keyboard = [
         [
@@ -39,23 +39,20 @@ def start(update: Update, context: CallbackContext) -> None:
         one_time_keyboard=False,
     )
 
-    update.message.reply_text(
+    await update.message.reply_text(
         "Vape Shop бот: /start получен\nНажми кнопку ниже, чтобы открыть магазин.",
         reply_markup=reply_markup,
     )
 
 
 def main() -> None:
-    print(">>> Vape Shop bot starting")  # чтобы видеть, что именно этот файл запустился
+    print(">>> Vape Shop bot starting")
 
-    updater = Updater(settings.TELEGRAM_BOT_TOKEN, use_context=True)
-
-    dp = updater.dispatcher
-    dp.add_handler(CommandHandler("start", start))
+    app = ApplicationBuilder().token(settings.TELEGRAM_BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
 
     logger.info("Vape Shop bot started (polling)")
-    updater.start_polling()
-    updater.idle()
+    app.run_polling()
 
 
 if __name__ == "__main__":
