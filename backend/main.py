@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -7,7 +8,29 @@ from fastapi.responses import HTMLResponse
 import uvicorn
 
 from backend.app.routes import products, orders
+from backend.config import get_settings
+from backend.app.database.db import engine, Base
 
+settings = get_settings()
+
+
+async def init_db_if_needed() -> None:
+    # Для SQLite: создаём файл и таблицы, если БД ещё не существует
+    if settings.DATABASE_URL.startswith("sqlite"):
+        db_path = settings.DATABASE_URL.split("///", 1)[1]
+        path = Path(db_path)
+        if not path.exists():
+            # синхронное создание таблиц поверх async engine
+            from sqlalchemy import create_engine
+
+            sync_url = settings.DATABASE_URL.replace("+aiosqlite", "")
+            sync_engine = create_engine(sync_url, future=True)
+            Base.metadata.create_all(bind=sync_engine)
+            sync_engine.dispose()
+
+
+# при импорте модуля (старте приложения) гарантируем наличие таблиц
+asyncio.run(init_db_if_needed())
 
 app = FastAPI(
     title="Vape Shop API",
