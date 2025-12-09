@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 from backend.app.routes import products, orders
 from backend.config import get_settings
 from backend.app.database.db import Base
+from seed_products import seed_products  # NEW
 
 settings = get_settings()
 
@@ -63,6 +64,13 @@ async def serve_admin():
         'src="js/', 'src="/static/js/'
     )
     return html
+
+
+# ВРЕМЕННЫЙ эндпоинт для засидки товаров на проде
+@app.get("/debug-seed")
+async def debug_seed():
+    await seed_products()
+    return {"status": "ok"}
 
 
 @app.get("/")
