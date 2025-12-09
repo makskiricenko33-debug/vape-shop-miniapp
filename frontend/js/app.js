@@ -153,9 +153,24 @@ function setQuantity(product, qty) {
     renderCartSummary();
 }
 
+/* !!! Больше не увеличиваем количество здесь !!! */
 function addToCart(product) {
-    const current = cart[product.id]?.quantity || 0;
-    setQuantity(product, current + 1);
+    const items = Object.values(cart);
+    if (!items.length) {
+        // если ничего не выбрано — можно, например, добавить 1 шт. текущего товара
+        setQuantity(product, 1);
+    }
+    // просто открываем модалку корзины / идём к оформлению
+    const html = buildCartHtml();
+    openCartModal(html);
+
+    const checkoutBtn = document.getElementById("cart-modal-checkout-btn");
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", () => {
+            closeCartModal();
+            sendOrder();
+        });
+    }
 }
 
 /* ----- Оформление заказа ----- */
