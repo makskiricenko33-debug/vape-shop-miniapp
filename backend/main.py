@@ -1,20 +1,28 @@
 from pathlib import Path
 
-import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import uvicorn
 
+from sqlalchemy import create_engine
+
 from backend.app.routes import products, orders
 from backend.config import get_settings
-from init_db import init_models  # скрипт инициализации таблиц
+from backend.app.database.db import Base
 
 settings = get_settings()
 
-# при старте приложения один раз создаём таблицы, если их нет
-asyncio.run(init_models())
+# Создаём таблицы в SQLite при старте, если их ещё нет
+if settings.DATABASE_URL.startswith("sqlite"):
+    sync_url = settings.DATABASE_URL.replace("+aiosqlite", "")
+    sync_engine = create_engine(sync_url, future=True)
+    Base.metadata.create_all(bind=sync_engine)
+    sync_engine.dispose()
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
 
 app = FastAPI(
     title="Vape Shop API",
@@ -29,9 +37,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-FRONTEND_DIR = BASE_DIR / "frontend"
 
 app.mount(
     "/static",
