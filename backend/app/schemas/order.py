@@ -7,7 +7,6 @@ class OrderListItem(BaseModel):
     created_at: datetime
     status: str
     customer_name: str | None = None
-    telegram_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -40,7 +39,6 @@ class OrderRead(BaseModel):
     created_at: datetime
     status: str
     customer_name: str | None = None
-    telegram_id: int | None = None
     items: list[OrderItemRead]
 
     class Config:
