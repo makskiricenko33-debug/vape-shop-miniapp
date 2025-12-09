@@ -1,11 +1,13 @@
 from datetime import datetime
 from pydantic import BaseModel
 
+
 class OrderListItem(BaseModel):
     id: int
     created_at: datetime
     status: str
     customer_name: str | None = None
+    telegram_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -30,6 +32,7 @@ class OrderItemRead(OrderItemBase):
 class OrderCreate(BaseModel):
     items: list[OrderItemCreate]
     customer_name: str | None = None
+    telegram_id: int | None = None
 
 
 class OrderRead(BaseModel):
@@ -37,6 +40,7 @@ class OrderRead(BaseModel):
     created_at: datetime
     status: str
     customer_name: str | None = None
+    telegram_id: int | None = None
     items: list[OrderItemRead]
 
     class Config:

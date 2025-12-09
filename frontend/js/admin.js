@@ -1,4 +1,4 @@
-const API_ORDERS = "http://localhost:8000/orders/";
+const API_ORDERS = "/orders/";
 
 const STATUS_LABELS = {
     new: "Новый",
@@ -34,6 +34,7 @@ function showOrderDetails(orderId) {
             const items = data.items || [];
             let bodyHtml = `
                 <div><b>Клиент:</b> ${data.customer_name || "—"}</div>
+                <div><b>Telegram ID:</b> ${data.telegram_id || "—"}</div>
                 <div><b>Статус:</b> ${
                     STATUS_LABELS[data.status] || data.status
                 }</div>
@@ -87,6 +88,7 @@ function renderOrders(orders) {
                 <div class="product-card__desc">
                     Статус: <b>${STATUS_LABELS[o.status] || o.status}</b><br/>
                     Клиент: ${o.customer_name || "—"}<br/>
+                    Telegram ID: ${o.telegram_id || "—"}<br/>
                     Создан: ${formatDate(o.created_at)}
                 </div>
                 <div class="product-card__meta" style="margin-top:8px;">
@@ -171,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .getElementById("reload-orders")
         .addEventListener("click", loadOrders);
 
-    // закрытие модалки
     document
         .getElementById("modal-close")
         .addEventListener("click", closeModal);

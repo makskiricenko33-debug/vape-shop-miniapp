@@ -1,5 +1,5 @@
-const API_PRODUCTS = "http://localhost:8000/products/";
-const API_ORDERS = "http://localhost:8000/orders/";
+const API_PRODUCTS = "/products/";
+const API_ORDERS = "/orders/";
 
 const cart = {}; // { productId: { product, quantity } }
 let tgUser = null;
@@ -121,7 +121,6 @@ function renderCartSummary() {
         footerBtn.style.opacity = "1";
     }
 
-    // если корзина открыта в модалке — обновим содержимое
     const cartModal = document.getElementById("cart-modal");
     if (cartModal && cartModal.style.display === "flex") {
         document.getElementById("cart-modal-body").innerHTML = buildCartHtml();
@@ -170,6 +169,7 @@ async function sendOrder() {
 
     const payload = {
         customer_name: customerName,
+        telegram_id: tgUser ? tgUser.id : null,
         items: items.map((item) => ({
             product_id: item.product.id,
             quantity: item.quantity,

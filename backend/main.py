@@ -26,7 +26,6 @@ app.add_middleware(
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 
-# статика: /static/index.html, /static/css/style.css, /static/js/app.js
 app.mount(
     "/static",
     StaticFiles(directory=str(FRONTEND_DIR)),
@@ -36,8 +35,17 @@ app.mount(
 
 @app.get("/app", response_class=HTMLResponse)
 async def serve_app():
-    # читаем index.html и подменяем пути на /static/...
     with open(FRONTEND_DIR / "index.html", "r", encoding="utf-8") as f:
+        html = f.read()
+    html = html.replace('href="css/', 'href="/static/css/').replace(
+        'src="js/', 'src="/static/js/'
+    )
+    return html
+
+
+@app.get("/admin", response_class=HTMLResponse)
+async def serve_admin():
+    with open(FRONTEND_DIR / "admin.html", "r", encoding="utf-8") as f:
         html = f.read()
     html = html.replace('href="css/', 'href="/static/css/').replace(
         'src="js/', 'src="/static/js/'
@@ -65,7 +73,6 @@ async def api_info():
     }
 
 
-# Роуты
 app.include_router(products.router)
 app.include_router(orders.router)
 

@@ -15,8 +15,10 @@ class Order(Base):
     )
     status: Mapped[str] = mapped_column(String(32), default="new", nullable=False)
 
-    # временно без users, просто поле для будущего user_id/telegram_id
     customer_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    telegram_id: Mapped[int | None] = mapped_column(      # <─ новое поле
+        Integer, nullable=True, index=True
+    )
 
     items: Mapped[list["OrderItem"]] = relationship(
         back_populates="order",
